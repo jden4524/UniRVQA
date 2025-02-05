@@ -89,7 +89,7 @@ while step < int(args['step']):
         retrieval_loss, inputs_embeds, attention_mask= model.retrieval_loss(**query, doc_input_ids=doc['input_ids'], doc_attention_mask = doc['attention_mask'])
         (retrieval_loss).backward()
         loss_dict = {"retrieval_loss": retrieval_loss}
-        if step >= 1000:
+        if step >= 100: # warm-up steps for language model generation.
             query.pop("attention_mask")
             ra_gen_loss = model.gen_loss(**query, attention_mask = attention_mask, inputs_embeds=inputs_embeds, doc_input_ids=doc['input_ids'], doc_attention_mask = doc['attention_mask'], labels = ans_input_ids)
             (ra_gen_loss).backward()
@@ -98,7 +98,7 @@ while step < int(args['step']):
             loss_dict["ra_gen_loss"] = ra_gen_loss
             loss_dict["nodoc_gen_loss"] = nodoc_gen_loss
         
-        if step >= 2000:
+        if step >= 200:
             self_verify_loss = model.self_verify_loss(**query, ans_full=ans_full, logits = logits, attention_mask = attention_mask, inputs_embeds=inputs_embeds, labels = ans_input_ids)
             (self_verify_loss).backward()
             loss_dict["self_verify_loss"] = self_verify_loss
@@ -121,14 +121,14 @@ while step < int(args['step']):
 
                     retrieval_loss, inputs_embeds, attention_mask= model.retrieval_loss(**query, doc_input_ids=doc['input_ids'], doc_attention_mask = doc['attention_mask'])
                     val_loss_dict["retrieval_loss"] += retrieval_loss.item()
-                    if step >= 1000:
+                    if step >= 100: # warm-up steps for language model generation.
                         query.pop("attention_mask")
                         ra_gen_loss = model.gen_loss(**query, attention_mask = attention_mask, inputs_embeds=inputs_embeds, doc_input_ids=doc['input_ids'], doc_attention_mask = doc['attention_mask'], labels = ans_input_ids)
                         nodoc_gen_loss, logits = model.gen_loss(**query, attention_mask = attention_mask, inputs_embeds=inputs_embeds, labels = ans_input_ids, return_logits = True)
                         val_loss_dict["ra_gen_loss"] += ra_gen_loss.item()
                         val_loss_dict["nodoc_gen_loss"] += nodoc_gen_loss.item()
 
-                    if step >= 2000:
+                    if step >= 150:
                         self_verify_loss = model.self_verify_loss(**query, ans_full=ans_full,logits = logits, attention_mask = attention_mask, inputs_embeds=inputs_embeds, labels = ans_input_ids)
                         val_loss_dict["self_verify_loss"] += self_verify_loss.item()
 
