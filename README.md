@@ -9,12 +9,11 @@ This repository contains the code for the UniRVQA framework from the paper (arXi
 
 The training and inference pipeline implemented here is:
 
-1. Encode an image and question with a BLIP-style model.
-2. Learn a retrieval representation with a ColBERT-style late-interaction objective.
-3. Build an index over an external text corpus.
-4. Retrieve top-k passages for each question.
-5. Generate answers with retrieved knowledge while also supporting reflective self-answering.
-6. Use the reflective decision process to determine when parametric knowledge is sufficient and when retrieved evidence should be used.
+1. Modify ColBERT's code (https://github.com/stanford-futuredata/ColBERT) into the UniRVQA's unified training framework.
+2. Learn a unified representation with a late-interaction and knowledge-based multimodal generation objectives.
+3. Build an index over an external corpus.
+4. INFERENCE: adaptive retreival and KB-VQA generation.
+5. Use the reflective decision process to determine when parametric knowledge is sufficient and when retrieved evidence should be used.
 
 The repository includes:
 
